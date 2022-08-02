@@ -23,62 +23,65 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 ?>
 <div class="panel panel-default">
-    <div class="panel-heading"><strong>Bulk</strong> Import</div>
-    <div class="panel-body">
-        <h4>Upload CSV</h4>
-        <div class="well">
-        <?php $form = ActiveForm::begin(array(
-            'id'=>'registration-form',
-            'enableAjaxValidation'=>true,
-            'options' => array('enctype' => 'multipart/form-data'),
-            'action' => Url::to(['/bulk_import/main/upload'])
-        )); ?>
-        <?php echo $form->errorSummary($model); ?>
-        <?php echo $form->field($model,'csv_file')->fileInput(); ?>
-        <br />
-        <?php echo Html::submitButton('Upload CSV', array('class' => '')); ?>
-        <?php $form->end(); ?>
-        </div>
+	<div class="panel-heading"><strong>Bulk</strong> Import</div>
+	<div class="panel-body">
+		<h4>Upload CSV</h4>
+		<div class="well">
+		<?php $form = ActiveForm::begin(array(
+			'id'=>'registration-form',
+			'enableAjaxValidation'=>true,
+			'options' => array('enctype' => 'multipart/form-data'),
+			'action' => Url::to(['/bulk_import/main/upload'])
+		)); ?>
+		<?php echo $form->errorSummary($model); ?>
+		<?php echo $form->field($model,'csv_file')->fileInput(); ?>
+		<br />
+		<?php echo Html::submitButton('Upload CSV', array('class' => '')); ?>
+		<?php $form->end(); ?>
+		</div>
 
-        <br />
-        <br />
-        <hr>
-        <br />
-        <br />
-        <h4>FAQ</h4>
-        
-        <h5>What can be bulk imported?</h5>
-        <p>This tool allows you to bulk import users and join/create spaces.</p>
-        <br />
+		<br />
+		<br />
+		<hr>
+		<br />
+		<br />
+		<h4>FAQ</h4>
+		
+		<h5>What can be bulk imported?</h5>
+		<p>This tool allows you to bulk import users and join/create spaces.</p>
+		<br />
 
-        <h5>Example CSV Format</h5>
-        <p>Ensure your csv file has these columns</p>
-        <table class="table">
-            <tr>
-                <td><b>username</b></td>
-                <td><b>email</b></td>
-                <td><b>password</b></td>
-                <td><b>firstname</b></td>
-                <td><b>lastname</b></td>
-                <td><b>space_names</b></td>
-            </tr>
-            <tr>
-                <td>user1</td>
-                <td>user1@example.com</td>
-                <td>test123</td>
-                <td>User</td>
-                <td>Wan</td>
-                <td>Space 1</td>
-            </tr>
-            <tr>
-                <td>user2</td>
-                <td>user2@example.com</td>
-                <td>test123</td>
-                <td>User</td>
-                <td>Two</td>
-                <td>Space 1,Space 2</td>
-            </tr>
-        </table>
-    </div>
+		<h5>Example CSV Format</h5>
+		<p>Ensure your csv file has these columns</p>
+		<table class="table">
+			<tr>
+				<td><b>username</b></td>
+				<td><b>email</b></td>
+				<td><b>password</b></td>
+				<td><b>firstname</b></td>
+				<td><b>lastname</b></td>
+				<td><b>country</b></td>
+				<td><b>space_names</b></td>
+			</tr>
+			<tr>
+				<td>user1</td>
+				<td>user1@example.com</td>
+				<td>test123</td>
+				<td>User</td>
+				<td>Wan</td>
+				<td>FR</td>
+				<td>Space 1</td>
+			</tr>
+			<tr>
+				<td>user2</td>
+				<td>user2@example.com</td>
+				<td>test123</td>
+				<td>User</td>
+				<td>Two</td>
+				<td>USA</td>
+				<td>Space 1,Space 2</td>
+			</tr>
+		</table>
+	</div>
 </div>
 
