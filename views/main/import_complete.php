@@ -16,72 +16,70 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
-use yii\helpers\Url;
-use yii\helpers\Html;
-use yii\widgets\ActiveForm;
 ?>
 <div class="panel panel-default">
 	<div class="panel-heading"><strong>Bulk</strong> Import</div>
 	<div class="panel-body">
-		<h4>Upload CSV</h4>
-		<div class="well">
-		<?php $form = ActiveForm::begin(array(
-			'id'=>'registration-form',
-			'enableAjaxValidation'=>true,
-			'options' => array('enctype' => 'multipart/form-data'),
-			'action' => Url::to(['/bulk_import/main/upload'])
-		)); ?>
-		<?php echo $form->errorSummary($model); ?>
-		<?php echo $form->field($model,'csv_file')->fileInput(); ?>
-		<br />
-		<?php echo Html::submitButton('Upload CSV', array('class' => '')); ?>
-		<?php $form->end(); ?>
-		</div>
+		<?php 
+		$flashes = Yii::$app->session->getAllFlashes();
 
-		<br />
-		<br />
-		<hr>
-		<br />
-		<br />
-		<h4>FAQ</h4>
-		
-		<h5>What can be bulk imported?</h5>
-		<p>This tool allows you to bulk import users and join/create spaces.</p>
-		<br />
+		if(!empty($flashes)) {
+			echo "<div class=\"well\">";
+			echo "<h5>Errors</h5>";
+			echo "<p>The input errors below should give you a hint as to what's going wrong.</p>";
 
-		<h5>Example CSV Format</h5>
-		<p>Ensure your csv file has these columns</p>
+			foreach($flashes as $key => $error) {
+				echo $error;
+			}
+
+			echo "</div>";
+		}
+		?>
+
+		<h5>Failed Imports</h5>
 		<table class="table">
 			<tr>
 				<td><b>username</b></td>
 				<td><b>email</b></td>
-				<td><b>password</b></td>
 				<td><b>firstname</b></td>
 				<td><b>lastname</b></td>
 				<td><b>country</b></td>
-				<td><b>space_names</b></td>
+				<td><b>spaces</b></td>
 			</tr>
-			<tr>
-				<td>user1</td>
-				<td>user1@example.com</td>
-				<td>test123</td>
-				<td>User</td>
-				<td>Wan</td>
-				<td>FR</td>
-				<td>Space 1</td>
-			</tr>
-			<tr>
-				<td>user2</td>
-				<td>user2@example.com</td>
-				<td>test123</td>
-				<td>User</td>
-				<td>Two</td>
-				<td>USA</td>
-				<td>Space 1,Space 2</td>
-			</tr>
+			<?php foreach($invalidImports as $data) { ?>
+				<tr>
+					<td><?php echo $data['username']; ?></td>
+					<td><?php echo $data['email']; ?></td>
+					<td><?php echo $data['firstname']; ?></td>
+					<td><?php echo $data['lastname']; ?></td>
+					<td><?php echo $data['country']; ?></td>
+					<td><?php echo implode(",", $data['space_names']); ?></td>
+				</tr>
+			<?php } ?>
 		</table>
+
+		<h5>Successful Imports</h5>
+		<table class="table">
+			<tr>
+				<td><b>username</b></td>
+				<td><b>email</b></td>
+				<td><b>firstname</b></td>
+				<td><b>lastname</b></td>
+				<td><b>country</b></td>
+				<td><b>spaces</b></td>
+			</tr>
+			<?php foreach($validImports as $data) { ?>
+				<tr>
+					<td><?php echo $data['username']; ?></td>
+					<td><?php echo $data['email']; ?></td>
+					<td><?php echo $data['firstname']; ?></td>
+					<td><?php echo $data['lastname']; ?></td>
+					<td><?php echo $data['country']; ?></td>
+					<td><?php echo implode(",", $data['space_names']); ?></td>
+				</tr>
+			<?php } ?>
+		</table>
+
 	</div>
 </div>
 
