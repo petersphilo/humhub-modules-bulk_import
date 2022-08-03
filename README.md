@@ -1,6 +1,8 @@
 # Bulk Import
 Bulk import a csv of accounts into HumHub.
 
+This is an updated and working version of the original module
+
 ## Installation
 
 - Clone the bulk_import module into your modules directory
