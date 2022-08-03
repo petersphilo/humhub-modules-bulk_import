@@ -3,6 +3,8 @@ Bulk import a csv of accounts into HumHub.
 
 This is an updated and working version of the original module
 
+The original author is Ben Magg
+
 ## Installation
 
 - Clone the bulk_import module into your modules directory
