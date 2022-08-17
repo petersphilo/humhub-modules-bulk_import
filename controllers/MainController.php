@@ -81,7 +81,12 @@ class MainController extends \humhub\modules\admin\components\Controller
 			
 			$ProfileModel = new Profile(); 
 			$ProfileModel->scenario = 'editAdmin'; 
-			$ProfileModel->load(['firstname' => $data['firstname'], 'lastname' => $data['lastname'], 'country' => $data['country']], '');
+			if(strlen($data['country'])!=2){ //avoid errors
+				$ProfileModel->load(['firstname' => $data['firstname'], 'lastname' => $data['lastname']], '');
+				}
+			else{
+				$ProfileModel->load(['firstname' => $data['firstname'], 'lastname' => $data['lastname'], 'country' => $data['country']], '');
+				}
 			$ProfileModel->user_id = $userModel->id;
 			$ProfileModel->validate();
 			$ProfileModel->save(); 
@@ -93,9 +98,9 @@ class MainController extends \humhub\modules\admin\components\Controller
 			$userPasswordModel->save();
 
 			// Join space / create then join space 
-			// Breaks if empty!!
-				foreach ($data['space_names'] as $key => $space_name) {
-
+			// No Longer Breaks if empty!!
+			foreach ($data['space_names'] as $key => $space_name) {
+				if($space_name && $space_name!='' && $space_name!=null){
 					// Find space by name attribute
 					$space = Space::findOne(['name'=>$space_name]);
 
@@ -108,9 +113,8 @@ class MainController extends \humhub\modules\admin\components\Controller
 
 					// Add member into space
 					$space->addMember($userModel->id);
-
 				}
-			
+			}
 
 			return true;
 
