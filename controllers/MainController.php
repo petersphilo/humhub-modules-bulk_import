@@ -24,6 +24,8 @@ use humhub\modules\admin\models\UserSearch;
 use humhub\modules\karma\models\Karma;
 use humhub\modules\karma\models\KarmaSearch;
 use Yii;
+use yii\console\Controller;
+use yii\console\ExitCode;
 use humhub\modules\bulk_import\forms\BulkImportForm;
 use humhub\modules\user\models\User;
 use humhub\modules\user\models\Profile;
@@ -64,50 +66,55 @@ class MainController extends \humhub\modules\admin\components\Controller
 		$userModel->scenario = 'editAdmin';
 
 		// User: Set values
-		$userModel->username = $data['username'];
-		$userModel->email = $data['email'];
+		//$userModel->username = $data['username'];
+		//$userModel->email = $data['email'];
+		$userModel->load(['username' => $data['username'], 'email' => $data['email']], '');
 		
 		$userModel->status = User::STATUS_ENABLED;
 		
-		// Profile: Set values
-		$userProfileModel = $userModel->profile; 
-		$userProfileModel->user_id = $userModel->id;
-		$userProfileModel->scenario = 'editAdmin'; 
-		$userProfileModel->firstname = $data['firstname'];
-		$userProfileModel->lastname = $data['lastname'];
-		$userProfileModel->country = $data['country'];
-		
+		$userModel->validate();
 		// Password: Set values
 		$userPasswordModel = new Password();
 		$userPasswordModel->setPassword($data['password']);
 
 		if($userModel->save()) {
+			
+			$ProfileModel = new Profile(); 
+			$ProfileModel->scenario = 'editAdmin'; 
+			$ProfileModel->load(['firstname' => $data['firstname'], 'lastname' => $data['lastname'], 'country' => $data['country']], '');
+			$ProfileModel->user_id = $userModel->id;
+			$ProfileModel->validate();
+			$ProfileModel->save(); 
+			$ProfileModel = new Profile(); 
+			$ProfileModel->user_id = $userModel->id;
+			$ProfileModel->country = $data['country'];
+			$ProfileModel->save(); 
 		
-		$userProfileModel->save();
-		
-		Group::findOne(['id' => $MyChosenGroupID])->addUser($userModel->id);
+			Group::findOne(['id' => $MyChosenGroupID])->addUser($userModel->id);
 		
 			// Save user password
 			$userPasswordModel->user_id = $userModel->id;
 			$userPasswordModel->save();
 
 			// Join space / create then join space 
-			foreach ($data['space_names'] as $key => $space_name) {
+			// Breaks if empty!!
+				foreach ($data['space_names'] as $key => $space_name) {
 
-				// Find space by name attribute
-				$space = Space::findOne(['name'=>$space_name]);
+					// Find space by name attribute
+					$space = Space::findOne(['name'=>$space_name]);
 
-				// Create the space if not found
-				if($space == null) {
-					$space = new Space();
-					$space->name = $space_name;
-					$space->save(); 
+					// Create the space if not found
+					if($space == null) {
+						$space = new Space();
+						$space->name = $space_name;
+						$space->save(); 
+					}
+
+					// Add member into space
+					$space->addMember($userModel->id);
+
 				}
-
-				// Add member into space
-				$space->addMember($userModel->id);
-
-			}
+			
 
 			return true;
 
@@ -216,13 +223,12 @@ class MainController extends \humhub\modules\admin\components\Controller
 					$importData = array(
 						'username' => $data['username'],
 						'password' => $data['password'], 
-
-					'firstname' => $data['firstname'],
+						'firstname' => $data['firstname'],
 						'lastname' => $data['lastname'], 
 						'email' => $data['email'],
 						'country' => $data['country'],
-					//	'group_id' => $group_id,
-					'space_names' => $space_names,
+						//'group_id' => $group_id,
+						'space_names' => $space_names,
 					);
 
 
