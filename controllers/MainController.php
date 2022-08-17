@@ -25,6 +25,7 @@ use humhub\modules\karma\models\Karma;
 use humhub\modules\karma\models\KarmaSearch;
 use Yii;
 use yii\console\Controller;
+use yii\console\ExitCode;
 use humhub\modules\bulk_import\forms\BulkImportForm;
 use humhub\modules\user\models\User;
 use humhub\modules\user\models\Profile;
@@ -84,11 +85,7 @@ class MainController extends \humhub\modules\admin\components\Controller
 			$ProfileModel->user_id = $userModel->id;
 			$ProfileModel->validate();
 			$ProfileModel->save(); 
-			$ProfileModel = new Profile(); 
-			$ProfileModel->user_id = $userModel->id;
-			$ProfileModel->country = $data['country'];
-			$ProfileModel->save(); 
-		
+			
 			Group::findOne(['id' => $MyChosenGroupID])->addUser($userModel->id);
 		
 			// Save user password
