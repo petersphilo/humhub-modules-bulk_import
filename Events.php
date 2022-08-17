@@ -22,41 +22,50 @@ namespace humhub\modules\bulk_import;
 
 use Yii;
 use yii\helpers\Url;
+use humhub\modules\ui\menu\MenuLink;
+use humhub\modules\admin\widgets\AdminMenu;
+use humhub\modules\admin\permissions\ManageModules;
 
 
 class Events extends \yii\base\BaseObject
 {
-    /**
-     * Defines what to do if admin menu is initialized.
-     *
-     * @param type $event
-     */
-    /**
-     * Defines what to do if admin menu is initialized.
-     *
-     * @param type $event
-     */
-    public static function onAdminMenuInit($event)
-    {
+	/**
+	 * Defines what to do if admin menu is initialized.
+	 *
+	 * @param type $event
+	 */
+	/**
+	 * Defines what to do if admin menu is initialized.
+	 *
+	 * @param type $event
+	 */
+	public static function onAdminMenuInit($event)
+	{
 
-        $event->sender->addItem(array(
-            'label' => Yii::t('BulkImportModule.base', 'Bulk Import'),
-            'url' => Url::to(['/bulk_import/main/index']),
-            'group' => 'manage',
-            'icon' => '<i class="fa fa-paw"></i>',
-            'isActive' => (Yii::$app->controller->module && Yii::$app->controller->module->id == 'bulk_import' && Yii::$app->controller->id == 'admin'),
-            'sortOrder' => 700,
-        ));
+		if (!Yii::$app->user->can(ManageModules::class)) {
+			return;
+			}
 
-        $event->sender->addItem(array(
-            'label' => Yii::t('BulkImportModule.base', 'Bulk Import Identicons'),
-            'url' => Url::to(['/bulk_import/main/identicon']),
-            'group' => 'manage',
-            'icon' => '<i class="fa fa-paw"></i>',
-            'isActive' => (Yii::$app->controller->module && Yii::$app->controller->module->id == 'bulk_import' && Yii::$app->controller->id == 'admin'),
-            'sortOrder' => 700,
-        ));
+		/** @var AdminMenu $menu */
+		$menu = $event->sender;
+		$menu->addEntry(new MenuLink([
+			'label' => Yii::t('BulkImportModule.base', 'Bulk Import'),
+			'url' => Url::to(['/bulk_import/main/index']),
+			//'group' => 'manage',
+			'icon' => 'user-plus',
+			'isActive' => (Yii::$app->controller->module && Yii::$app->controller->module->id == 'bulk_import' && Yii::$app->controller->id == 'admin'),
+			'sortOrder' => 700,
+			]));
 
-    }
+		$menu->addEntry(new MenuLink([
+			'label' => Yii::t('BulkImportModule.base', 'Bulk Import Identicons'),
+			'url' => Url::to(['/bulk_import/main/identicon']),
+			//'group' => 'manage',
+			'icon' => 'plus-square',
+			'isActive' => (Yii::$app->controller->module && Yii::$app->controller->module->id == 'bulk_import' && Yii::$app->controller->id == 'admin'),
+			'sortOrder' => 700,
+			]));
+
+	}
 
 }
