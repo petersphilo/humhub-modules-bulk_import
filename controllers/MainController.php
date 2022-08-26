@@ -66,29 +66,46 @@ class MainController extends \humhub\modules\admin\components\Controller
 		$userModel->scenario = 'editAdmin';
 
 		// User: Set values
-		//$userModel->username = $data['username'];
-		//$userModel->email = $data['email'];
-		$userModel->load(['username' => $data['username'], 'email' => $data['email']], '');
+		$userModel->username = $data['username'];
+		$userModel->email = $data['email'];
 		
 		$userModel->status = User::STATUS_ENABLED;
 		
-		$userModel->validate();
 		// Password: Set values
 		$userPasswordModel = new Password();
 		$userPasswordModel->setPassword($data['password']);
 
 		if($userModel->save()) {
 			
-			$ProfileModel = new Profile(); 
+			$ProfileModel = $userModel->profile; 
 			$ProfileModel->scenario = 'editAdmin'; 
-			if(strlen($data['country'])!=2){ //avoid errors
-				$ProfileModel->load(['firstname' => $data['firstname'], 'lastname' => $data['lastname']], '');
+			/*
+			$ProfileModel->firstname  = $data['firstname'];
+			$ProfileModel->lastname  = $data['lastname'];
+			$ProfileModel->previousid  = $data['previousid'];
+			*/
+			// test
+			foreach ($data as $datakey => $dataval) {
+				//$datakey=mb_strtolower($datakeyraw,'UTF-8'); 
+				if(
+					($datakey=='country' && strlen($dataval)!=2) ||
+					$datakey=='space_names' || 
+					$datakey=='username' || 
+					$datakey=='email' || 
+					$datakey=='password' || 
+					$dataval=='' || 
+					strlen($dataval)==0
+					){
+					// do nothing
+					}
+				else{
+					$ProfileModel->$datakey = $dataval; 
+					}
+				
 				}
-			else{
-				$ProfileModel->load(['firstname' => $data['firstname'], 'lastname' => $data['lastname'], 'country' => $data['country']], '');
-				}
+			//
 			$ProfileModel->user_id = $userModel->id;
-			$ProfileModel->validate();
+			//$ProfileModel->validate();
 			$ProfileModel->save(); 
 			
 			Group::findOne(['id' => $MyChosenGroupID])->addUser($userModel->id);
@@ -208,7 +225,9 @@ class MainController extends \humhub\modules\admin\components\Controller
 				//$group_id = 1;
 
 				$csv->auto($file->tempName);
-				foreach($csv->data as $data) {
+				
+				foreach( $csv->data as $data) {
+					$data=array_change_key_case($data,CASE_LOWER); 
 					// Make a username from the first and last names if username is mising
 					if(empty($data['username'])) {
 						// $data['username'] = substr(str_replace(" ", "_", strtolower(trim($data['firstname']) . "_" . trim($data['lastname']))), 0, 25);
@@ -220,6 +239,7 @@ class MainController extends \humhub\modules\admin\components\Controller
 				if (array_key_exists('space_names', $data)){
 						$space_names = explode(",", $data['space_names']);
 				}
+					/*
 					$importData = array(
 						'username' => $data['username'],
 						'password' => $data['password'], 
@@ -227,9 +247,20 @@ class MainController extends \humhub\modules\admin\components\Controller
 						'lastname' => $data['lastname'], 
 						'email' => $data['email'],
 						'country' => $data['country'],
+						'previousid' => $data['previousid'],
 						//'group_id' => $group_id,
 						'space_names' => $space_names,
 					);
+					*/
+					$importData = array(); 
+					foreach (array_keys($data) as $datakey) {
+						//$datakey=mb_strtolower($datakeyraw,'UTF-8'); 
+						//array_merge($importData, [$datakey => $data[$datakey]]);
+						if($datakey=='space_names'){$importData['space_names']=$space_names;}
+						else{$importData[$datakey]=$data[$datakey];}
+						
+						}
+					
 
 
 					// Register user
