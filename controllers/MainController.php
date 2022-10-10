@@ -98,6 +98,9 @@ class MainController extends \humhub\modules\admin\components\Controller
 					){
 					// do nothing
 					}
+				elseif($datakey=='group_id'){
+					$MyChosenGroupID = $dataval; 
+					}
 				else{
 					$ProfileModel->$datakey = $dataval; 
 					}
